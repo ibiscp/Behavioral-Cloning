@@ -19,6 +19,12 @@ from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_a
 import tensorflow as tf
 tf.python.control_flow_ops = tf
 
+def cut_image(img):
+    rows, cols, channel = img.shape
+    top = int(.4 * rows)
+    botton = int(.85 * rows)
+    border = int(.05 * cols)
+    return img[top:botton, border:cols-border, :]
 
 sio = socketio.Server()
 app = Flask(__name__)
@@ -36,15 +42,24 @@ def telemetry(sid, data):
     # The current image from the center camera of the car
     imgString = data["image"]
     image = Image.open(BytesIO(base64.b64decode(imgString)))
-    image_array = np.asarray(image)
-    transformed_image_array = image_array[None, :, :, :]
+
+    # image_array = np.asarray(image)
+    # # image_cuted = cut_image(image_array)
+    # # print(image_array.shape)
+    #
+    # image_array = (image_array - 128.0) / 128.0
+
+    image_cuted = cut_image(np.copy(image))
+    image_array = (image_cuted - 128.0) / 128.0
+    image_array = np.reshape(image_cuted, [1, 288, 72, 3])
+
+    #transformed_image_array = image_array[None, :, :, :]
     # This model currently assumes that the features of the model are just the images. Feel free to change this.
-    steering_angle = float(model.predict(transformed_image_array, batch_size=1))
+    steering_angle = float(model.predict(image_array, batch_size=1))
     # The driving model currently just outputs a constant throttle. Feel free to edit this.
     throttle = 0.2
     print(steering_angle, throttle)
     send_control(steering_angle, throttle)
-
 
 @sio.on('connect')
 def connect(sid, environ):
@@ -68,10 +83,10 @@ if __name__ == '__main__':
         # NOTE: if you saved the file by calling json.dump(model.to_json(), ...)
         # then you will have to call:
         #
-        #   model = model_from_json(json.loads(jfile.read()))\
+        model = model_from_json(json.loads(jfile.read()))\
         #
         # instead.
-        model = model_from_json(jfile.read())
+        # model = model_from_json(jfile.read())
 
 
     model.compile("adam", "mse")
