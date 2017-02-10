@@ -18,6 +18,7 @@ from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_a
 # Fix error with Keras and TensorFlow
 import tensorflow as tf
 tf.python.control_flow_ops = tf
+import cv2
 
 def cut_image(img):
     rows, cols, channel = img.shape
@@ -51,7 +52,8 @@ def telemetry(sid, data):
 
     image_cuted = cut_image(np.copy(image))
     image_array = (image_cuted - 128.0) / 128.0
-    image_array = np.reshape(image_cuted, [1, 288, 72, 3])
+    image_resized = cv2.resize(image_array,(64, 64), interpolation = cv2.INTER_CUBIC)
+    image_array = np.reshape(image_resized, [1, 64, 64, 3])
 
     #transformed_image_array = image_array[None, :, :, :]
     # This model currently assumes that the features of the model are just the images. Feel free to change this.
