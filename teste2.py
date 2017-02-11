@@ -15,7 +15,7 @@ import numpy as np
 list_images = list()
 
 # The following value is added and subtracted from the steering angle for the images of the right and left side of the car
-offset = 0.25
+offset = 0.25 # Best value: 0.25
 
 import random
 bias = 0.5
@@ -29,19 +29,12 @@ with open('data\driving_log.csv', 'r') as csvfile:
         brake = float(row[5])
         speed = float(row[6])
 
-#         if (steering == 0):
-#             if (np.random.rand() > 0.9999):
-#                 # Center image
-#                 list_images.append([row[0].replace(" ", ""), steering, throttle, brake, speed])
-#         else:
-#         if (steering != 0):
-#             if (np.random.rand() > 0.0):
         steering_thresh = np.random.rand()
         if (abs(steering) + bias) < steering_thresh:
             pass # drop this sample
         else:
             if (steering == 0):
-                if (np.random.rand() > 0.65):
+                if (np.random.rand() > 0.75): # Best value: 0.8
                     # Center image
                     list_images.append([row[0].replace(" ", ""), steering, throttle, brake, speed])
                     # Left image
@@ -77,7 +70,7 @@ def plot_image_prob(image):
     ax.get_yaxis().set_visible(False)
     plt.show()
 
-def random_shear(image, steering_angle, shear_range=200):
+def shear_image(image, steering_angle, shear_range=200):
     """
     Sources:
     https://medium.com/@ksakmann/behavioral-cloning-make-a-car-drive-like-yourself-dc6021152713#.7k8vfppvk
@@ -267,6 +260,7 @@ def myGenerator2(list, batch_size, samples_epoch, flag="test"):
                     image, steering = brightness_image(np.copy(image), steering)
                     image, steering = rotate_image(np.copy(image), steering)
                     image, steering = translate_image(np.copy(image), steering)
+                    #image, steering = shear_image(np.copy(image), steering)
                     image, steering = flip_image(np.copy(image), steering)
 
                 image = cut_image(image)
@@ -295,17 +289,17 @@ print("Fitting model")
 model.compile(loss='mse', metrics=['mse'], optimizer=Adam(lr=0.001))
 
 early_stopping = EarlyStopping(monitor='val_loss', min_delta=0.00001, patience=3, verbose=1)
-model_checkpoint = ModelCheckpoint(filepath='model.weights.{epoch:02d}-{val_loss:.5f}.h5', verbose=1, save_best_only=True, save_weights_only=True)
-learning_rate_plateau_reducer = ReduceLROnPlateau(verbose=1, patience=0, epsilon=1e-5)
+#model_checkpoint = ModelCheckpoint(filepath='model.weights.{epoch:02d}-{val_loss:.5f}.h5', verbose=1, save_best_only=True, save_weights_only=True)
+learning_rate_plateau_reducer = ReduceLROnPlateau(verbose=1, patience=2, epsilon=1e-5)
 
 batch_size=50
-samples_epoch = 4000
+samples_epoch = 6000
 n_epoch = 20
 
 fit = model.fit_generator(myGenerator2(train_set, batch_size, samples_epoch),
                           verbose=1, samples_per_epoch=samples_epoch,
                           nb_epoch=n_epoch,
-                          #callbacks=[model_checkpoint, learning_rate_plateau_reducer, early_stopping],
+                          callbacks=[learning_rate_plateau_reducer, early_stopping],
                           validation_data=myGenerator2(valid_set, batch_size, 1000, "validation"),
                           nb_val_samples = 1000)
 
