@@ -25,7 +25,7 @@ def cut_image(img):
     top = int(.4 * rows)
     botton = int(.85 * rows)
     border = int(.05 * cols)
-    return img[top:botton, border:cols-border, :]
+    return img[top:botton, :, :]#border:cols-border, :]
 
 sio = socketio.Server()
 app = Flask(__name__)
@@ -41,6 +41,8 @@ def telemetry(sid, data):
     # The current speed of the car
     speed = data["speed"]
     # The current image from the center camera of the car
+    model_height = 64
+    model_weight = 64
     imgString = data["image"]
     image = Image.open(BytesIO(base64.b64decode(imgString)))
 
@@ -51,15 +53,15 @@ def telemetry(sid, data):
     # image_array = (image_array - 128.0) / 128.0
 
     image_cuted = cut_image(np.copy(image))
-    image_array = (image_cuted - 128.0) / 128.0
-    image_resized = cv2.resize(image_array,(64, 64), interpolation = cv2.INTER_CUBIC)
-    image_array = np.reshape(image_resized, [1, 64, 64, 3])
+    #image_array = (image_cuted - 128.0) / 128.0
+    image_resized = cv2.resize(image_cuted,(model_height, model_weight), interpolation = cv2.INTER_CUBIC)
+    image_array = np.reshape(image_resized, [1, model_height, model_weight, 3])
 
     #transformed_image_array = image_array[None, :, :, :]
     # This model currently assumes that the features of the model are just the images. Feel free to change this.
     steering_angle = float(model.predict(image_array, batch_size=1))
     # The driving model currently just outputs a constant throttle. Feel free to edit this.
-    throttle = 0.3
+    throttle = 0.20
     print("Steering: {:+2.4f}  Speed: {:2.2f}".format(steering_angle, throttle))
     send_control(steering_angle, throttle)
 

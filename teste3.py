@@ -22,12 +22,11 @@ list_images = list()
 offset = 0.2 # Best value: 0.20 0.22
 
 import random
-bias = 0.6 # Best value: 0.60
-path = "data"
+bias = 1 # Best value: 0.60
+path = "new_data"
 
 with open(path + '\driving_log.csv', 'r') as csvfile:
     reader = csv.reader(csvfile)
-    next(reader)
     for row in reader:
         steering = float(row[3])
         throttle = float(row[4])
@@ -39,20 +38,20 @@ with open(path + '\driving_log.csv', 'r') as csvfile:
             pass # drop this sample
         else:
             if (steering == 0):
-                if (np.random.rand() > 0.8): # Best value: 0.75 # Mudar para 0.8
+                if (np.random.rand() > 0): # Best value: 0.75 # Mudar para 0.8
                     # Center image
                     list_images.append([row[0].replace(" ", ""), steering, throttle, brake, speed])
-                    # Left image
-                    list_images.append([row[1].replace(" ", ""), steering + offset, throttle, brake, speed])
-                    # Right image
-                    list_images.append([row[2].replace(" ", ""), steering - offset, throttle, brake, speed])
+                    # # Left image
+                    # list_images.append([row[1].replace(" ", ""), steering + offset, throttle, brake, speed])
+                    # # Right image
+                    # list_images.append([row[2].replace(" ", ""), steering - offset, throttle, brake, speed])
             else:
                 # Center image
                 list_images.append([row[0].replace(" ", ""), steering, throttle, brake, speed])
-                # Left image
-                list_images.append([row[1].replace(" ", ""), steering + offset, throttle, brake, speed])
-                # Right image
-                list_images.append([row[2].replace(" ", ""), steering - offset, throttle, brake, speed])
+                # # Left image
+                # list_images.append([row[1].replace(" ", ""), steering + offset, throttle, brake, speed])
+                # # Right image
+                # list_images.append([row[2].replace(" ", ""), steering - offset, throttle, brake, speed])
 
 print('Images mapped with {} examples'.format(len(list_images)))
 
@@ -102,7 +101,7 @@ def translate_image(img, steering, horz_range=30, vert_range=5):
     rows, cols, chs = img.shape
     tx = np.random.randint(-horz_range, horz_range+1)
     ty = np.random.randint(-vert_range, vert_range+1)
-    steering = steering + tx * 0.0025 # mul by steering angle units per pixel
+    steering = steering + tx * 0.003 # mul by steering angle units per pixel
     tr_M = np.float32([[1,0,tx], [0,1,ty]])
     img = cv2.warpAffine(img, tr_M, (cols,rows), borderMode=1)
     return img, steering
@@ -136,7 +135,7 @@ def load_data_batch(list_images, indices):
     y = np.empty(shape = [1], dtype = np.float32)
 
     for i in indices:
-        image = Image.open(path + "/" + list_images[i][0])
+        image = Image.open(list_images[i][0])
         steering = list_images[i][1]
 
         X = np.vstack([X, np.reshape(image, [1, 320, 160, 3])])
@@ -277,7 +276,7 @@ def myGenerator(list, batch_size, samples_epoch, flag="test"):
 
             if (flag == "test"):
                 image, steering = brightness_image(np.copy(image), steering)
-                image, steering = rotate_image(np.copy(image), steering)
+                #image, steering = rotate_image(np.copy(image), steering)
                 image, steering = translate_image(np.copy(image), steering)
                 image, steering = shadow_image(np.copy(image), steering)
                 image, steering = flip_image(np.copy(image), steering)
@@ -341,21 +340,21 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 
 # compile and fit model
 print("Fitting model")
-model.compile(loss='mse', metrics=['mse'], optimizer=Adam(lr=0.001))
+model.compile(loss='mse', metrics=['mse'], optimizer=Nadam(lr=0.001))
 
 early_stopping = EarlyStopping(monitor='val_loss', min_delta=0.00001, patience=3, verbose=1)
 #model_checkpoint = ModelCheckpoint(filepath='model.weights.{epoch:02d}-{val_loss:.5f}.h5', verbose=1, save_best_only=True, save_weights_only=True)
-learning_rate_plateau_reducer = ReduceLROnPlateau(verbose=1, patience=1, epsilon=1e-5)
+learning_rate_plateau_reducer = ReduceLROnPlateau(verbose=1, patience=2, epsilon=1e-5)
 
 batch_size=400
-samples_epoch = 5000
-n_epoch = 10
+samples_epoch = 4000
+n_epoch = 8
 
 fit = model.fit_generator(myGenerator(train_set, batch_size, samples_epoch),
                           verbose=1, samples_per_epoch=samples_epoch,
                           nb_epoch=n_epoch,
-                          callbacks=[learning_rate_plateau_reducer, early_stopping],
-                          validation_data=myGenerator(valid_set, batch_size, 1000, "validation"),
+                          callbacks=[learning_rate_plateau_reducer],
+                          validation_data=myGenerator(valid_set, 100, 1000, "validation"),
                           nb_val_samples = 1000)
 
 # scores = model.evaluate(myGenerator(X_valid, y_valid, batch_size, "validation"), verbose=0)
