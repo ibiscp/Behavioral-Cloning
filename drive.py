@@ -63,7 +63,7 @@ def telemetry(sid, data):
     else:
         throttle = throttle_desired
 
-    print("Steering: {:+2.4f}  Speed: {:2.2f}".format(steering_angle, throttle_desired*100))
+    print(" Steering: {:+2.4f}  Speed: {:2.2f}".format(steering_angle, throttle_desired*100))
     send_control(np.median(steering_vector), throttle)
 
 @sio.on('connect')
