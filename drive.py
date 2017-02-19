@@ -21,15 +21,15 @@ tf.python.control_flow_ops = tf
 import cv2
 
 def cut_image(img):
-    #rows, cols, channel = img.shape
-    #top = int(.4 * rows)
-    #botton = int(.85 * rows)
-    return img[60:136, :, :]#border:cols-border, :]
+    return img[60:136, :, :]
 
 sio = socketio.Server()
 app = Flask(__name__)
 model = None
 prev_image_array = None
+
+import collections
+steering_vector = collections.deque(maxlen=5)
 
 @sio.on('telemetry')
 def telemetry(sid, data):
@@ -38,11 +38,10 @@ def telemetry(sid, data):
     # The current throttle of the car
     throttle = data["throttle"]
     # The current speed of the car
-    speed = data["speed"]
+    speed = float(data["speed"])
     # The current image from the center camera of the car
     imgString = data["image"]
     image = Image.open(BytesIO(base64.b64decode(imgString)))
-
 
     # Size of the image
     model_height = 64
@@ -53,14 +52,19 @@ def telemetry(sid, data):
     image_resized = cv2.resize(image_cuted,(model_height, model_weight), interpolation = cv2.INTER_AREA)
     image_array = np.reshape(image_resized, [1, model_height, model_weight, 3])
 
-    #image_array = (image_array/255.0) -0.5
-
     # This model currently assumes that the features of the model are just the images. Feel free to change this.
     steering_angle = float(model.predict(image_array, batch_size=1))
+    steering_vector.append(steering_angle)
+
     # The driving model currently just outputs a constant throttle. Feel free to edit this.
-    throttle = 0.3 - abs(steering_angle) * 0.15
-    print("Steering: {:+2.4f}  Speed: {:2.2f}".format(steering_angle, throttle))
-    send_control(steering_angle, throttle)
+    throttle_desired = 0.3 - abs(steering_angle) * 0.15
+    if speed < throttle_desired*100*0.8:
+        throttle = 1
+    else:
+        throttle = throttle_desired
+
+    print("Steering: {:+2.4f}  Speed: {:2.2f}".format(steering_angle, throttle_desired*100))
+    send_control(np.median(steering_vector), throttle)
 
 @sio.on('connect')
 def connect(sid, environ):

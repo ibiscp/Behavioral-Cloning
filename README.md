@@ -44,9 +44,13 @@ Bellow is an example of the images used to train the CNN, it is also shown how t
 <img src="images/center_left_right.png"/>
 
 ## Histogram
-The image bellow presents the histogram of the given dataset, here the images with the steering angle equal to zero  because its number is much more representative.
+The image bellow presents the histogram of the given dataset, here is possible to notice that the number of images with steering angle equal to zero is much more representative.
 <br><br>
 <img src="images/histogram_dataset.png"/>
+
+In order to have a more balanced dataset, it is necessary to eliminate good part of the zero angle steering examples. It was decided to consider only 8% of the total number, and the result is presented bellow.
+
+<img src="images/histogram_non_zeros.png"/>
 
 ## Image Augmentation
 In order to improve the learning task and make it more robust, it is necessary to augment the dataset, so more data is artificially generated based only on the given ones.
@@ -57,7 +61,7 @@ The following augmentation is used in this project:
 * Change image brightness
 * Rotate
 * Translate
-* Shadow
+* Shadow Shear
 * Cut
 
 Examples of each transformation will be presented bellow.
@@ -87,6 +91,11 @@ Translating the image randomly makes it possible to generate even more data in d
 Shading randomly an image makes it more robust to shadows on the track, such as a tree, wires or poles.
 <br><br>
 <img src="images/shadow.png"/>
+
+### Shear
+Shearing the image is also usefull, once the 
+<br><br>
+<img src="images/shear.png"/>
 
 ### Cut
 In order to minimize the number of parameters of our CNN, it is possible to cut some unnecessary parts of the image, including the bottom, top and some few pixels on the sides.
