@@ -6,8 +6,8 @@ In order to meet this goal, it is necessary to train a Convolutional Neural Netw
 The figure bellow presents an image of both tracks of the [simulator](###simulator-download):
 
 <div style="text-align:center">
-<img src="images/1st_track.png" style="width:200px;"/>
-<img src="images/2nd_track.png" style="width:200px;"/>
+<img src="images/1st_track.png" style="width:100px;"/>
+<img src="images/2nd_track.png" style="width:100px;"/>
 </div>
 
 ##Resources
