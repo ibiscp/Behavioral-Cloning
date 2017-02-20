@@ -120,8 +120,8 @@ This project was tested using two diffenrent architectures, [CommaAI](https://gi
 * Batch size: 50
 * Validation split: 30%
 
-### NVIDIA Architecture 
-<div style="text-align:center"><img src="images/nv.png" width="300"/></div>
+### NVIDIA Architecture
+<p align="center"><img src="images/nv.png" width="300"/></p>
 
 ### CommaAI Architecture
 <div style="text-align:center"><img src="images/comma.png" width="300"/></div>
