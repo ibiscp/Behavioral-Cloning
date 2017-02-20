@@ -29,7 +29,7 @@ model = None
 prev_image_array = None
 
 import collections
-steering_vector = collections.deque(maxlen=5)
+steering_vector = collections.deque(maxlen=3)
 
 @sio.on('telemetry')
 def telemetry(sid, data):
