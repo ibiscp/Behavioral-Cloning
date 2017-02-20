@@ -29,7 +29,7 @@ model = None
 prev_image_array = None
 
 import collections
-steering_vector = collections.deque(maxlen=3)
+steering_vector = collections.deque(maxlen=5)
 
 @sio.on('telemetry')
 def telemetry(sid, data):
@@ -57,13 +57,15 @@ def telemetry(sid, data):
     steering_vector.append(steering_angle)
 
     # The driving model currently just outputs a constant throttle. Feel free to edit this.
-    throttle_desired = 0.3 - abs(steering_angle) * 0.15
+    throttle_desired = 0.3 - abs(steering_angle) * 0.05
     if speed < throttle_desired*100*0.8:
         throttle = 1
+    elif speed > throttle_desired*100*1.2:
+        throttle = -1
     else:
         throttle = throttle_desired
 
-    print(" Steering: {:+2.4f}  Speed: {:2.2f}".format(steering_angle, throttle_desired*100))
+    print("\tSteering: {:+2.4f}  Speed: {:2.2f}".format(steering_angle, throttle_desired*100))
     send_control(np.median(steering_vector), throttle)
 
 @sio.on('connect')
