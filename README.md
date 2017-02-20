@@ -6,8 +6,8 @@ In order to meet this goal, it is necessary to train a Convolutional Neural Netw
 The figure bellow presents an image of both tracks of the [simulator](###simulator-download):
 
 <div style="text-align:center">
-<img src="images/1st_track.png" style="width:100px;"/>
-<img src="images/2nd_track.png" style="width:100px;"/>
+<img src="images/1st_track.png" width="300"/>
+<img src="images/2nd_track.png" width="300"/>
 </div>
 
 ##Resources
@@ -121,10 +121,10 @@ This project was tested using two diffenrent architectures, [CommaAI](https://gi
 * Validation split: 30%
 
 ### NVIDIA Architecture 
-
+<div style="text-align:center"><img src="images/nv.png" width="300"/></div>
 
 ### CommaAI Architecture
-
+<div style="text-align:center"><img src="images/comma.png" width="300"/></div>
 
 
 ## Results
