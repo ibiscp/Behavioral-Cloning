@@ -113,9 +113,9 @@ The image bellow shows an example of a composed treatment of an image.
 This project was tested using two different architectures, [CommaAI](https://github.com/commaai/research/blob/master/train_steering_model.py) and [NVIDIA](https://arxiv.org/pdf/1604.07316v1.pdf). Botch were trained using the same configuration (learning rate, optimizer, number of epochs, samples per epoch and augmentation) the only thing that was really changed was the model.
 
 ### Configuration
-* Learning rate: 1e-4
+* Learning rate: 1e-3
 * Optimizer: Adam
-* Number of epochs: 10
+* Number of epochs: 20
 * Samples per epoch: 20000
 * Batch size: 50
 * Validation split: 30%
@@ -131,7 +131,7 @@ Number total of trainable parameters: 592,497
 ## Results
 Bellow is presented a video result running on the same track where the CNN was trained (Track 1). It was also tested on a track never seen before (Track 2) in order to prove that the model learns how to generalize to different tracks and conditions.
 
-<p align="center"><iframe width="420" height="315" src="https://youtu.be/BWNSNUe35KQ" frameborder="0" allowfullscreen></iframe></p>
+<p align="center">[![Behavioral Cloning](https://i.ytimg.com/vi/BWNSNUe35KQ/1.jpg)](https://www.youtube.com/watch?v=BWNSNUe35KQ)
 
 ## Conclusion and next steps
 The task of adjusting the parameters, in order to get a satisfactory result is really difficult. Besides defining the architecture parameters, various other factors influence on the result, such as augmentation and dataset balance.
