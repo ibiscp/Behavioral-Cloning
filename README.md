@@ -128,9 +128,10 @@ Number total of trainable parameters: 2,116,983
 Number total of trainable parameters: 592,497
 <p align="center"><img src="images/comma.png" width="300"/></p>
 
-
 ## Results
 Bellow is presented a video result running on the same track where the CNN was trained (Track 1). It was also tested on a track never seen before (Track 2) in order to prove that the model learns how to generalize to different tracks and conditions.
+
+<p align="center"><iframe width="420" height="315" src="https://youtu.be/BWNSNUe35KQ" frameborder="0" allowfullscreen></iframe></p>
 
 ## Conclusion and next steps
 The task of adjusting the parameters, in order to get a satisfactory result is really difficult. Besides defining the architecture parameters, various other factors influence on the result, such as augmentation and dataset balance.
