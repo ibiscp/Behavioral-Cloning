@@ -131,7 +131,7 @@ Number total of trainable parameters: 592,497
 ## Results
 Bellow is presented a video result running on the same track where the CNN was trained (Track 1). It was also tested on a track never seen before (Track 2) in order to prove that the model learns how to generalize to different tracks and conditions.
 
-<p align="center">[![Behavioral Cloning](https://i.ytimg.com/vi/BWNSNUe35KQ/1.jpg)](https://www.youtube.com/watch?v=BWNSNUe35KQ)
+[![Behavioral Cloning](https://i.ytimg.com/vi/BWNSNUe35KQ/1.jpg)](https://www.youtube.com/watch?v=BWNSNUe35KQ)
 
 ## Conclusion and next steps
 The task of adjusting the parameters, in order to get a satisfactory result is really difficult. Besides defining the architecture parameters, various other factors influence on the result, such as augmentation and dataset balance.
